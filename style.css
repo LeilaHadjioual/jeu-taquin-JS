@@ -1,0 +1,26 @@
+h1, h2 {
+    text-align: center;
+}
+
+table, th, td {
+    border: 1px solid darkred;
+}
+
+.case {
+
+}
+
+table {
+    width: 30em;
+    height: 30em;
+    text-align:center;
+    margin: auto;
+    margin-top: 5em;
+
+}
+
+.buttons {
+    margin-top: 4em;
+    text-align: center;
+    background-color: black;
+}
