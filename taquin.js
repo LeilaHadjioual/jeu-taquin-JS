@@ -1,93 +1,117 @@
+let tableauLenght = 4;
+
+let tab = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, " "]
+];
+
 $(document).ready(function () {
 
-    let taille = 4;
-
-    let tab = [
-        [1, 2, 3, 4],
-        [5, 6, 7, 8],
-        [9, 10, 11, 12],
-        [13, 14, 15, " "]
-    ];
-
-    $("#reinitialize").on('click', function () {
-        $("#reinitialize").off('click');
-        for (let i = 0; i < tab.length; i++) {
-            $("table").append("<tr class='row" + i + "'></tr>");
-            for (let j = 0; j < tab.length; j++) {
-                $(".row" + i).append("<td class='cas" + j + "'>" + tab[i][j] + "</td>");
-                $('.row' + i + ' .cas' + j).click(function () {
-                    permute(i,j);
-                })
+    $("#reinit").on('click', function () {
+        $("#reinit").off('click');
+        for (let x = 0; x < tab.length; x++) {
+            $("table").append("<tr class='row" + x + "'></tr>");
+            for (let y = 0; y < tab.length; y++) {
+                $(".row" + x).append("<td class='cas" + y + "'>" + tab[x][y] + "</td>");
+                $('.row' + x + ' .cas' + y).click(function () {
+                    permute(x, y);
+                });
+                // $("#btn-shuffle").on('click', function () {
+                //     shuffleArray(tab);
+                //
+                // })
             }
         }
     });
-
-    function draw() {
-        for (let i = 0; i < tab.length; i++) {
-            for (let j = 0; j < tab.length; j++) {
-                $('.row' + i + ' .cas' + j).html( tab[i][j]);
-
-            }
-        }
-    }
-
-    //recherche les coordonnées x,y de la case vide
-    function emptyPosition() {
-        for (let i = 0; i < tab.length; i++) {
-            for (let j = 0; j < tab.length; j++) {
-                if(tab[i][j] === " ") {
-                    return {"i": i, "j": j};
-                }
-            }
-        }
-    }
-
-    //vérifie que la cellule voisine est vide
-    function cellIsEmpty(i, j) {
-        return (cellExist(i, j) && (tab[i][j] === " "));
-    }
-
-    //vérifie que la cellule existe
-    function cellExist(i, j) {
-        return ((i >= 0 && i < taille) && (j >= 0 && j < taille));
-    }
-
-    //vérfie que la cellule pleine est permutable avec la cellule voisine qui doit être vide
-    function cellPermutable(i, j) {
-        return( cellIsEmpty(i, j - 1) && cellExist(i, j - 1)
-            || cellIsEmpty(i, j + 1) &&  cellExist(i,j+1)
-            || cellIsEmpty(i - 1, j) && cellExist(i-1,j)
-            || cellIsEmpty(i + 1, j) && cellExist(i+1,j))
-    }
-
-    //permute la cellule vide avec la cellule pleine
-    function permute(i, j) {
-        // où est la case vide ?
-        let emptyCase = emptyPosition(); // retourne un objet
-
-        // est-ce permutable ?
-        let casePerm = cellPermutable(i,j);
-
-        //récupère la valeur de la cellule pleine
-        let fullCase = tab[i][j];
-
-        //récupére la valeur de la cellule vide
-        let newEmptyCase = tab[emptyCase.i][emptyCase.j]; // nomVariable.clé car objet
-
-        // permuter
-         if(casePerm === true){
-             tab[i][j]= newEmptyCase;
-             tab[emptyCase.i][emptyCase.j] = fullCase ;
-             draw();
-        }
-    }
-
-    // console.log(cellIsEmpty(3, 3));
-    // console.log(cellExist(4, 2));
-    // console.log(cellPermutable(1, 2));
-    // console.log(positionVide());
-
-
 });
+
+//redessine le tableau en incluant le html modifié
+function draw() {
+    for (let x = 0; x < tab.length; x++) {
+        for (let y = 0; y < tab.length; y++) {
+            $('.row' + x + ' .cas' + y).html(tab[x][y]);
+        }
+    }
+}
+
+//recherche les coordonnées x,y de la case vide
+function emptyPosition() {
+    for (let x = 0; x < tab.length; x++) {
+        for (let y = 0; y < tab.length; y++) {
+            if (tab[x][y] === " ") {
+                return {"x": x, "y": y};
+            }
+        }
+    }
+}
+
+//vérifie que la cellule voisine est vide
+function cellIsEmpty(x, y) {
+    return (cellExist(x, y) && (tab[x][y] === " "));
+}
+
+//vérifie que la cellule existe
+function cellExist(x, y) {
+    return ((x >= 0 && x < tableauLenght) && (y >= 0 && y < tableauLenght));
+}
+
+//vérifie que la cellule pleine est permutable avec la cellule voisine qui doit être vide
+function cellPermutable(x, y) {
+    return (cellIsEmpty(x, y - 1) && cellExist(x, y - 1)
+        || cellIsEmpty(x, y + 1) && cellExist(x, y + 1)
+        || cellIsEmpty(x - 1, y) && cellExist(x - 1, y)
+        || cellIsEmpty(x + 1, y) && cellExist(x + 1, y))
+}
+
+//permute la cellule vide avec la cellule pleine
+function permute(x, y) {
+    // où est la case vide ?
+    let emptyCase = emptyPosition(); // retourne un objet
+
+    // est-ce permutable ?
+    let casePerm = cellPermutable(x, y);
+
+    //récupère la valeur de la cellule pleine
+    let fullCase = tab[x][y];
+
+    //récupére la valeur de la cellule vide
+    let newEmptyCase = tab[emptyCase.x][emptyCase.y]; // nomVariable.clé car objet
+
+    // permuter les cellules
+    if (casePerm === true) {
+        tab[x][y] = newEmptyCase;
+        tab[emptyCase.x][emptyCase.y] = fullCase;
+        draw();
+    }
+}
+
+// //mélanger les cases
+// function shuffleArray(array) {
+//     let tabsimple = [];
+//     for(let i = 0; i < array.length; i++){
+//         for(let j=0; j<array.length; j++){
+//             tabsimple.push(array[i][j]);
+//         }
+//     }
+//     // console.log(tabsimple);
+//     for (var x = tabsimple.length - 1; x > 0; x--) {
+//         var rand = Math.floor(Math.random() * (x + 1));
+//         var temp = tabsimple[x];
+//         console.log(temp);
+//         tabsimple[x] = tabsimple[rand];
+//         tabsimple[rand] = temp;
+//         // console.log(temp);
+//     }
+////     draw();
+//
+// }
+
+
+
+
+
+
 
 

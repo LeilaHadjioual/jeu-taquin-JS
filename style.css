@@ -6,17 +6,12 @@ table, th, td {
     border: 1px solid darkred;
 }
 
-.case {
-
-}
-
 table {
     width: 30em;
     height: 30em;
     text-align:center;
     margin: auto;
     margin-top: 5em;
-
 }
 
 .buttons {
