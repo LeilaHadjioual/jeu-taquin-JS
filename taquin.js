@@ -12,18 +12,19 @@ $(document).ready(function () {
     $("#reinit").on('click', function () {
         $("#reinit").off('click');
         for (let x = 0; x < tab.length; x++) {
-            $("table").append("<tr class='row" + x + "'></tr>");
+            $("table").append("<tr id='row" + x + "'></tr>");
             for (let y = 0; y < tab.length; y++) {
-                $(".row" + x).append("<td class='cas" + y + "'>" + tab[x][y] + "</td>");
-                $('.row' + x + ' .cas' + y).click(function () {
+                $("#row" + x).append("<td class='cas" + y + "'>" + tab[x][y] + "</td>");
+                $('#row' + x + ' .cas' + y).click(function () {
                     permute(x, y);
                 });
-                // $("#btn-shuffle").on('click', function () {
-                //     shuffleArray(tab);
-                //
-                // })
+
             }
         }
+        $("#btn-shuffle").on('click', function () {
+            shuffleArray(tab);
+
+        })
     });
 });
 
@@ -31,7 +32,7 @@ $(document).ready(function () {
 function draw() {
     for (let x = 0; x < tab.length; x++) {
         for (let y = 0; y < tab.length; y++) {
-            $('.row' + x + ' .cas' + y).html(tab[x][y]);
+            $('#row' + x + ' .cas' + y).html(tab[x][y]);
         }
     }
 }
@@ -68,7 +69,7 @@ function cellPermutable(x, y) {
 //permute la cellule vide avec la cellule pleine
 function permute(x, y) {
     // où est la case vide ?
-    let emptyCase = emptyPosition(); // retourne un objet
+    let emptyCase = emptyPosition();// retourne un objet
 
     // est-ce permutable ?
     let casePerm = cellPermutable(x, y);
@@ -77,36 +78,49 @@ function permute(x, y) {
     let fullCase = tab[x][y];
 
     //récupére la valeur de la cellule vide
-    let newEmptyCase = tab[emptyCase.x][emptyCase.y]; // nomVariable.clé car objet
+    let newEmptyCase = tab[emptyCase.x][emptyCase.y]; //[nomVariable.clé] car la fonction emptyPosition retourne un objet
 
     // permuter les cellules
     if (casePerm === true) {
         tab[x][y] = newEmptyCase;
+        $('#row' + x + ' .cas' + y).addClass("colorCase");
         tab[emptyCase.x][emptyCase.y] = fullCase;
+        $('#row' + emptyCase.x + ' .cas' + emptyCase.y).removeClass("colorCase");
         draw();
     }
 }
 
-// //mélanger les cases
-// function shuffleArray(array) {
-//     let tabsimple = [];
-//     for(let i = 0; i < array.length; i++){
-//         for(let j=0; j<array.length; j++){
-//             tabsimple.push(array[i][j]);
-//         }
-//     }
-//     // console.log(tabsimple);
-//     for (var x = tabsimple.length - 1; x > 0; x--) {
-//         var rand = Math.floor(Math.random() * (x + 1));
-//         var temp = tabsimple[x];
-//         console.log(temp);
-//         tabsimple[x] = tabsimple[rand];
-//         tabsimple[rand] = temp;
-//         // console.log(temp);
-//     }
-////     draw();
-//
-// }
+//mélanger les cases du tableau
+function shuffleArray(array) {
+    let tab1D = [];
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array.length; j++) {
+            tab1D.push(array[i][j]); //transforme le tableau à 2 dimensions en tableau à 1 dimension
+        }
+    }
+
+    for (var x = tab1D.length - 1; x > 0; x--) {
+        var rand = Math.floor(Math.random() * (x + 1));
+        var temp = tab1D[x];
+        console.log(temp);
+        tab1D[x] = tab1D[rand];
+        tab1D[rand] = temp;
+        // console.log(temp);
+        createTab2D(tab1D);
+        draw();
+    }
+}
+
+// transforme le tableau 1 dim en tableau à 2 dimensions
+    function createTab2D(array){
+    for(let x=0; x<tab.length;x++){
+        for(let y=0; y<tab.length;y++){
+            let z = tab.length * x + y; //variable qui stocke la valeur de la cellule qui correspond à 3 X indice de x + indice y
+            tab[x][y] = array[z];//valeurs du tableau 1D prend les valeurs du tableau 2D (tab)
+        }
+    }
+
+}
 
 
 

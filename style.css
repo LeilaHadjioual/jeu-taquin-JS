@@ -2,20 +2,29 @@ h1, h2 {
     text-align: center;
 }
 
-table, th, td {
-    border: 1px solid darkred;
+td {
+    background-color: lightgray;
+    border-radius: 4em;
+    min-width: 2em;
 }
 
 table {
     width: 30em;
     height: 30em;
-    text-align:center;
+    text-align: center;
+    font-family: Verdana;
+    font-size:large;
     margin: auto;
     margin-top: 5em;
+    /*background-color: black;*/
 }
 
 .buttons {
     margin-top: 4em;
     text-align: center;
     background-color: black;
+}
+
+.colorCase{
+    background-color: white;
 }
