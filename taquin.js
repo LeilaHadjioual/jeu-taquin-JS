@@ -7,27 +7,6 @@ let tab = [
     [13, 14, 15, " "]
 ];
 
-$(document).ready(function () {
-
-    $("#reinit").on('click', function () {
-        $("#reinit").off('click');
-        for (let x = 0; x < tab.length; x++) {
-            $("table").append("<tr id='row" + x + "'></tr>");
-            for (let y = 0; y < tab.length; y++) {
-                $("#row" + x).append("<td class='cas" + y + "'>" + tab[x][y] + "</td>");
-                $('#row' + x + ' .cas' + y).click(function () {
-                    permute(x, y);
-                });
-
-            }
-        }
-        $("#btn-shuffle").on('click', function () {
-            shuffleArray(tab);
-
-        })
-    });
-});
-
 //redessine le tableau en incluant le html modifié
 function draw() {
     for (let x = 0; x < tab.length; x++) {
@@ -60,14 +39,17 @@ function cellExist(x, y) {
 
 //vérifie que la cellule pleine est permutable avec la cellule voisine qui doit être vide
 function cellPermutable(x, y) {
-    return (cellIsEmpty(x, y - 1) && cellExist(x, y - 1)
-        || cellIsEmpty(x, y + 1) && cellExist(x, y + 1)
-        || cellIsEmpty(x - 1, y) && cellExist(x - 1, y)
-        || cellIsEmpty(x + 1, y) && cellExist(x + 1, y))
+    return (cellIsEmpty(x, y - 1)
+        || cellIsEmpty(x, y + 1)
+        || cellIsEmpty(x - 1, y)
+        || cellIsEmpty(x + 1, y))
 }
 
 //permute la cellule vide avec la cellule pleine
 function permute(x, y) {
+    if(!cellExist(x,y)){
+        return;
+    }
     // où est la case vide ?
     let emptyCase = emptyPosition();// retourne un objet
 
@@ -83,15 +65,15 @@ function permute(x, y) {
     // permuter les cellules
     if (casePerm === true) {
         tab[x][y] = newEmptyCase;
-        $('#row' + x + ' .cas' + y).addClass("colorCase");
+        // $('#row' + x + ' .cas' + y).addClass("colorCase");
         tab[emptyCase.x][emptyCase.y] = fullCase;
-        $('#row' + emptyCase.x + ' .cas' + emptyCase.y).removeClass("colorCase");
+        // $('#row' + emptyCase.x + ' .cas' + emptyCase.y).removeClass("colorCase");
         draw();
     }
 }
 
 //mélanger les cases du tableau
-function shuffleArray(array) {
+function shuffleAuto(array) {
     let tab1D = [];
     for (let i = 0; i < array.length; i++) {
         for (let j = 0; j < array.length; j++) {
@@ -112,20 +94,56 @@ function shuffleArray(array) {
 }
 
 // transforme le tableau 1 dim en tableau à 2 dimensions
-    function createTab2D(array){
-    for(let x=0; x<tab.length;x++){
-        for(let y=0; y<tab.length;y++){
-            let z = tab.length * x + y; //variable qui stocke la valeur de la cellule qui correspond à 3 X indice de x + indice y
+function createTab2D(array) {
+    for (let x = 0; x < tab.length; x++) {
+        for (let y = 0; y < tab.length; y++) {
+            let z = tab.length * x + y; //variable qui stocke la valeur de la cellule qui correspond à (3 X indice x + indice y)
             tab[x][y] = array[z];//valeurs du tableau 1D prend les valeurs du tableau 2D (tab)
         }
     }
 
 }
 
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
+function shuffle(x, y) {
+    let tirage = getRandom(0, 4);
+    if (tirage === 0 && cellPermutable(x, y + 1)) {
+        permute(x, y + 1);
+    }else if (tirage === 1 && cellPermutable(x, y - 1)) {
+        permute(x, y +-1);
+    }else if (tirage === 2 && cellPermutable(x+1, y)) {
+        permute(x+1, y);
+    }else if (tirage === 3 && cellPermutable(x-1, y)) {
+        permute(x-1, y);
+    }
 
+}
 
+$(document).ready(function () {
 
+    $("#show").on('click', function () {
+        $("#show").off('click');
+        for (let x = 0; x < tab.length; x++) {
+            $("table").append("<tr id='row" + x + "'></tr>");
+            for (let y = 0; y < tab.length; y++) {
+                $("#row" + x).append("<td class='cas" + y + "'>" + tab[x][y] + "</td>");
+                $('#row' + x + ' .cas' + y).click(function () {
+                    permute(x, y);
+                });
 
+            }
+        }
+        $("#btn-shuffle").on('click', function () {
+            shuffleAuto(tab);
 
+        })
+    });
+    $('#mix').click(function(){
+        let emptyCase = emptyPosition();
+        shuffle(emptyCase.x, emptyCase.y);
+    });
+});
 
