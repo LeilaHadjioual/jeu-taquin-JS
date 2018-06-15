@@ -7,6 +7,13 @@ let tab = [
     [13, 14, 15, " "]
 ];
 
+let tabRef = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, " "]
+];
+
 //redessine le tableau en incluant le html modifié
 function draw() {
     for (let x = 0; x < tab.length; x++) {
@@ -47,7 +54,7 @@ function cellPermutable(x, y) {
 
 //permute la cellule vide avec la cellule pleine
 function permute(x, y) {
-    if(!cellExist(x,y)){
+    if (!cellExist(x, y)) {
         return;
     }
     // où est la case vide ?
@@ -68,6 +75,7 @@ function permute(x, y) {
         // $('#row' + x + ' .cas' + y).addClass("colorCase");
         tab[emptyCase.x][emptyCase.y] = fullCase;
         // $('#row' + emptyCase.x + ' .cas' + emptyCase.y).removeClass("colorCase");
+        youWin();
         draw();
     }
 }
@@ -84,10 +92,8 @@ function shuffleAuto(array) {
     for (var x = tab1D.length - 1; x > 0; x--) {
         var rand = Math.floor(Math.random() * (x + 1));
         var temp = tab1D[x];
-        console.log(temp);
         tab1D[x] = tab1D[rand];
         tab1D[rand] = temp;
-        // console.log(temp);
         createTab2D(tab1D);
         draw();
     }
@@ -101,7 +107,6 @@ function createTab2D(array) {
             tab[x][y] = array[z];//valeurs du tableau 1D prend les valeurs du tableau 2D (tab)
         }
     }
-
 }
 
 function getRandom(min, max) {
@@ -112,15 +117,28 @@ function shuffle(x, y) {
     let tirage = getRandom(0, 4);
     if (tirage === 0 && cellPermutable(x, y + 1)) {
         permute(x, y + 1);
-    }else if (tirage === 1 && cellPermutable(x, y - 1)) {
-        permute(x, y +-1);
-    }else if (tirage === 2 && cellPermutable(x+1, y)) {
-        permute(x+1, y);
-    }else if (tirage === 3 && cellPermutable(x-1, y)) {
-        permute(x-1, y);
+    } else if (tirage === 1 && cellPermutable(x, y - 1)) {
+        permute(x, y + -1);
+    } else if (tirage === 2 && cellPermutable(x + 1, y)) {
+        permute(x + 1, y);
+    } else if (tirage === 3 && cellPermutable(x - 1, y)) {
+        permute(x - 1, y);
     }
-
 }
+
+function youWin(){
+    for (let i =0; i<tabRef.length;i++){
+        for(let j=0; j<tab.length; j++){
+            if(tabRef[i][j] !== tab[i][j]){
+                return false
+            }
+        }
+    }
+    // alert( 'gagné');
+    $("table").before("<div class='win'> Vous avez gagné</div>");
+    $(".win").fadeOut(3000);
+}
+
 
 $(document).ready(function () {
 
@@ -133,17 +151,19 @@ $(document).ready(function () {
                 $('#row' + x + ' .cas' + y).click(function () {
                     permute(x, y);
                 });
-
             }
         }
         $("#btn-shuffle").on('click', function () {
             shuffleAuto(tab);
-
         })
     });
-    $('#mix').click(function(){
-        let emptyCase = emptyPosition();
-        shuffle(emptyCase.x, emptyCase.y);
+
+    $('#mix').click(function () {
+        for (let a = 1; a < 1000; a++) {
+            let emptyCase = emptyPosition();
+            shuffle(emptyCase.x, emptyCase.y);
+        }
     });
+
 });
 
