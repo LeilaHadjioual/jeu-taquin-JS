@@ -75,12 +75,12 @@ function permute(x, y) {
         // $('#row' + x + ' .cas' + y).addClass("colorCase");
         tab[emptyCase.x][emptyCase.y] = fullCase;
         // $('#row' + emptyCase.x + ' .cas' + emptyCase.y).removeClass("colorCase");
-        youWin();
+        // youWin();
         draw();
     }
 }
 
-//mélanger les cases du tableau
+//mélanger aléatoire des cases du tableau
 function shuffleAuto(array) {
     let tab1D = [];
     for (let i = 0; i < array.length; i++) {
@@ -113,6 +113,7 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+//mélange case par case
 function shuffle(x, y) {
     let tirage = getRandom(0, 4);
     if (tirage === 0 && cellPermutable(x, y + 1)) {
@@ -123,27 +124,95 @@ function shuffle(x, y) {
         permute(x + 1, y);
     } else if (tirage === 3 && cellPermutable(x - 1, y)) {
         permute(x - 1, y);
+        youWin();
     }
 }
 
-function youWin(){
-    for (let i =0; i<tabRef.length;i++){
-        for(let j=0; j<tab.length; j++){
-            if(tabRef[i][j] !== tab[i][j]){
+//fonction qui détermine si tu as gagné
+function youWin() {
+    for (let i = 0; i < tabRef.length; i++) {
+        for (let j = 0; j < tab.length; j++) {
+            if (tabRef[i][j] !== tab[i][j]) {
                 return false
             }
         }
     }
     // alert( 'gagné');
-    $("table").before("<div class='win'> Vous avez gagné</div>");
-    $(".win").fadeOut(3000);
+    $("table").before("<div class='winAlert'> Vous avez gagné</div>");
+    $(".winAlert").fadeOut(3000);
 }
 
+//fonction qui vérifie si la partie est gagnable
+function winnable() {
+    let pV = parityEmptyCase();
+    let pT = countPermutation(tab);
+    console.log(pV);
+    console.log(pT);
+    if (pV === pT) {
+        alert("Le jeu est résolvable");
+        console.log("ok");
+    } else {
+        alert("Le jeu n'est pas résolvable");
+        console.log("pas ok");
+    }
+}
+
+
+//fonction qui vérifie la parité des permutations
+function countPermutation(tableau) {
+    let simpleArray = [];
+    let tmp;
+    let count = 0;
+    let parity;
+    for (let i = 0; i < tableau.length; i++) {
+        for (let j = 0; j < tableau.length; j++) {
+            simpleArray.push(tableau[i][j]);
+        }
+    }
+    for (let i = 0; i < simpleArray.length; i++) {
+        if (simpleArray[i] === " ") {
+            simpleArray[i] = 16;
+        }
+    }
+    for (let i = 0; i < simpleArray.length; i++) {
+        let k = i;
+        for (let j = i + 1; j < simpleArray.length; j++) {
+            if (simpleArray[j] < simpleArray[k]) {
+                k = j;
+            }
+        }
+        if (k !== i) {
+            tmp = simpleArray[k];
+            simpleArray[k] = simpleArray[i];
+            simpleArray[i] = tmp;
+            count++;
+        }
+    }
+    if (count % 2 === 0) {
+        parity = "pair";
+    } else {
+        parity = "impair"
+    }
+    return parity;
+}
+
+//vérifie la parité de la case vide
+function parityEmptyCase() {
+    let emptyCase = emptyPosition();
+    let sum = emptyCase.i + emptyCase.j;
+    let par;
+    if (sum % 2 === 0) {
+        par = "pair";
+    } else {
+        par = "impair";
+    }
+    return par;
+}
 
 $(document).ready(function () {
 
     $("#show").on('click', function () {
-        $("#show").off('click');
+        $("#show").hide();
         for (let x = 0; x < tab.length; x++) {
             $("table").append("<tr id='row" + x + "'></tr>");
             for (let y = 0; y < tab.length; y++) {
@@ -155,15 +224,18 @@ $(document).ready(function () {
         }
         $("#btn-shuffle").on('click', function () {
             shuffleAuto(tab);
+        });
+
+        $('#mix').click(function () {
+            for (let a = 1; a < 1000; a++) {
+                let emptyCase = emptyPosition();
+                shuffle(emptyCase.x, emptyCase.y);
+            }
+        });
+
+        $('#parity').click(function () {
+            winnable();
         })
     });
 
-    $('#mix').click(function () {
-        for (let a = 1; a < 1000; a++) {
-            let emptyCase = emptyPosition();
-            shuffle(emptyCase.x, emptyCase.y);
-        }
-    });
-
 });
-
